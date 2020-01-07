@@ -1,0 +1,80 @@
+﻿@model Object
+@{
+    ViewBag.Title = "Cancion";
+    Layout = "~/Views/cabeceras.cshtml";
+
+    var _cancion = (Dictionary<string, Object>)Model;
+
+    Object[] _letras = (Object[])_cancion["cadenas"];
+    //List<Object> _letras = (List<Object>)_cancion["cadenas"];
+
+}
+@section scripts_propios{
+    @System.Web.Optimization.Scripts.Render("~/model/js/codificacion")
+}
+
+<div class="col-sm-2">
+    <div class="panel">
+        <div class="panel-body">
+            <div class="btn-group">
+                <a class="btn btn-success" id="do_start"><i class="glyphicon glyphicon-play"></i></a>
+                <a class="btn btn-primary"><i class="glyphicon glyphicon-repeat"></i></a>
+                <a class="btn btn-danger" id="do_stop"><i class="glyphicon glyphicon-stop"></i></a>
+                <a class="btn btn-info" id="do_conf"><i class="glyphicon glyphicon-cog"></i></a>
+            </div>
+        </div>
+    </div>    
+</div>
+
+@if (ViewBag.error != null) {
+    <h2>@ViewBag.error</h2>
+} else {
+    <div class="col-sm-10 text-center">
+        <h5>
+            @_cancion["titulo"]
+        </h5>
+        <h6>
+            @_cancion["artista"]
+        </h6>
+        <hr />
+        <div class="progress progress-striped active hidden">
+            <div id="total" class="progress-bar" style="width:0%"></div>
+        </div>
+        <p class="dest" style="color:white !important;"></p>
+    </div>
+    <div class="col-md-12 hidden">
+        <p class="source" >
+            @foreach (var salto in _letras) {
+                @String.Concat(salto.ToString(), ".") <br />
+            }
+        </p>
+    </div>
+
+    <div id="show_conf" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title"><i class="glyphicon glyphicon-cog"></i> Ajustes</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="control-label"><i class="glyphicon glyphicon-time"></i> V. Lectura</label>
+                        <input id="vel_lect" class="form-control" type="number" min="1" max="30" step="0.1" value="5"
+                               data-toggle="tooltip" data-placement="bottom" title="Expresado en segundos" />
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label"><i class="glyphicon glyphicon-time"></i> V. Aparicion</label>
+                        <input id="vel_show" class="form-control" type="number" min="1" max="30" step="0.1" value="5"
+                               data-toggle="tooltip" data-placement="bottom" title="Expresado en segundos" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="do_mod" type="button" class="btn btn-success" data-dismiss="modal">
+                        <i class="glyphicon glyphicon-check"></i> Aplicar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
