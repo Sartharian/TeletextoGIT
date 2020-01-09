@@ -26,24 +26,28 @@
 
     //Rutina para cargar elementos.
     $("#do_start").click(function () {
-        //1- Definir formato del texto (parrafos con salto de linea)
-        //3- Definir objetos:
+        //1- Definir formato del texto (parrafos con salto de linea) = LISTO
+        //2- Definir objetos:
         /*   Letra-> titulo-art-cuerpo-dur-cantparrafos = LISTO 
-             Parrafo-> Duracion de muestra
+             Parrafo-> Duracion de muestra = PROX REV
         */
-        //4- variables editables en ejecucion: tiempo de velocidad y muestra
+        //3- variables editables en ejecucion: tiempo de velocidad y muestra = LISTO
 
+        // Ocultar barra de progreso
         $("#total").parent().removeClass("hidden");
 
-        //Separa los parrafos de la cancion
+        // Separa los parrafos de la cancion
         var _bod = $(".source").text().split("."); 
         var _t = _bod.length; // cantidad de parrafos
-        var _i = -1; // inicio de lectura
+        var _i = 0; // inicio de lectura
         var DEBUG = false; // Muestra texto en consola
         var _k = false; // Modo karaoke
-        var _d = parseInt($("#vel_lect").val().replace(".", ",")) * 1000; // duracion entre frases 
 
-        //Convierte cada oración deltexto en span faddeables
+        // HACK: (en la prox rev esto ya no servirá) duracion entre frases 
+        var _d = parseInt($("#vel_lect").val().replace(".", ",")) * 1000; 
+
+        // Convierte cada oración deltexto en span faddeables
+        // Ojo: se opera con el texto que está dentro del documento
         for (var elems = 0; elems < _t; elems++) {
             var _c = $(document.createElement("span"));
             $(_c).html(_bod[elems] + "<br />").hide();
@@ -51,16 +55,22 @@
         }
 
         function recursive() {
-            _i++; //...en la posicion que estamos
-
-            //Alcance de fin de lectura
+            // la recursividad termina cuando se alcanza el total de frases
             if (_i > _t) return;
 
-            //Por cada frase
+            // Selector de frases segun posicion dentro del total
             var opt = $(".dest span").eq(_i % _t);
 
-            //la mostramos..
+            // Seguimiento de estado (ejecución recursiva!)
             var _e = _i + 1;
+
+            // Conteo de parrafos (Util para el debug)
+            if (_gats.length === 0) {
+                if (DEBUG) {
+                    console.log("Recursive gatillado!:\n" +
+                        "Parrafos a mostrar: " + _t);
+                }
+            }
 
             // Creamos un listado de desencadenadores 
             // (Se usa para luego detenerlos)
@@ -71,20 +81,23 @@
                         $(elem).removeClass("text-warning");
                     });
                     // Descomentar para verlo como karaoke
-                    if(_k) $(opt).prev().remove();
+                    // if(_k) $(opt).prev().remove();
 
-                    // Resaltamos el texto a mostrar
-                    $(opt).addClass("text-warning").fadeIn(1200, function () {                        
-                        $("#total").css("width", Math.floor(_e * 100 / _t) + "%");
+                    // Barra de progreso de lectura
+                    $("#total").css("width", Math.floor(_e * 100 / _t) + "%");
 
+                    // Resaltamos el texto a mostrar (El callback del fadeIn puede no ser necesario)
+                    $(opt).addClass("text-warning").fadeIn(1200, function () {          
                         if (DEBUG) console.log("Progreso: " + Math.floor(_e * 100 / _t) + "%");
                     });
 
+                    //El desplazamiento ocurre cuando no esta activado el modo karaoke
                     if(!_k) $("html, body").animate({ scrollTop: "+="+$("html, body").height() + "px" }, "linear");
-                                        
-                    if (DEBUG) console.log("Animando elemento [" + _i + "] de [" + _t + "] | Tiempo: " + _d * _i);
-                }, _d * _i)
-            );            
+
+                }, _d * _i) // [duración de la muestra X posicion actual de muestra]
+            );    
+            _i++; // posicion en que estamos
+
             //Ejecucion recursiva
             recursive();
         }
