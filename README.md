@@ -16,4 +16,5 @@ No implementa patrones ni tecnicas especiales, solo muestra texto en frases sepa
 </ul>
 
 ## Documentación:
-No requiere, solo es un código de implementación.
+El branch por defecto (master) contiene la revisión estatica del script, mientras que el branch karaoke contiene las revisiones para hacerlo
+funcionar de forma más dinamica
